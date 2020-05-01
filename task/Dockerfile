@@ -28,8 +28,8 @@ FROM alpine:latest
 RUN apk add --no-cache --update ca-certificates
 
 # Copy App binary to image
-COPY --from=builder /go/bin/go-hexa /usr/local/bin/go-hexa
+COPY --from=builder /go/bin/task /usr/local/bin/task
 
 EXPOSE 8000
 
-ENTRYPOINT ["go-hexa"]
+ENTRYPOINT ["task"]
