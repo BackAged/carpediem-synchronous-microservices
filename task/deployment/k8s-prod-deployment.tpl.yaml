@@ -1,0 +1,80 @@
+# todo
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carpediem-user-deployment
+  namespace: b2c
+  labels:
+    app: carpediem-user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: carpediem-user
+  template:
+    metadata:
+      labels:
+        app: carpediem-user
+    spec:
+      containers:
+      - name: carpediem-user
+        image: 094697208586.dkr.ecr.ap-southeast-1.amazonaws.com/st-prod-user:${BITBUCKET_BUILD_NUMBER}
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            memory: "512Mi"        
+        env:
+          - name: APPLICATION_SERVER_PORT
+            value: "80"
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: carpediem-user-service
+  namespace: b2c
+spec:
+  type: NodePort
+  selector:
+    app: carpediem-user
+  ports:
+  - protocol: TCP
+    port: 80
+
+---   
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: carpediem-user-ingress
+  namespace: b2c
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: user.carpediem.net
+    http:
+      paths:
+      - backend:
+          serviceName: carpediem-user-service
+          servicePort: 80
+        path: /
+
+---
+kind: HorizontalPodAutoscaler 
+apiVersion: autoscaling/v2beta1
+metadata:
+  name: carpediem-user
+  namespace: b2c
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: carpediem-user-deployment
+  minReplicas: 1
+  maxReplicas: 4
+  metrics:
+  - type: Resource 
+    resource: 
+      name: memory 
+      targetAverageValue: 400M    
