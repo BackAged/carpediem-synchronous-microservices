@@ -7,6 +7,6 @@ require (
 	github.com/go-redis/redis/v7 v7.2.0
 	github.com/google/uuid v1.1.1
 	github.com/spf13/cobra v0.0.7
-	go.mongodb.org/mongo-driver v1.3.2
-	gopkg.in/yaml.v2 v2.2.4
+	go.mongodb.org/mongo-driver v1.5.1
+	gopkg.in/yaml.v2 v2.2.8
 )
